@@ -12,7 +12,6 @@ board = [
 
 
 # solve method (backtracking)
-
 def solve_board(_board):
     test_space = find_empty_space(_board)
     # base case: board is full (cannot find empty space)
