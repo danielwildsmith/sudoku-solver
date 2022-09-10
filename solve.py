@@ -12,8 +12,30 @@ board = [
 
 
 # solve method (backtracking)
-# base case: board is full (cannot find empty space)
 
+def solve_board(_board):
+    test_space = find_empty_space(_board)
+    # base case: board is full (cannot find empty space)
+    if not test_space:
+        return True
+    else:
+        row = test_space[0]
+        col = test_space[1]
+    
+    for i in range(1, 10):
+        if is_valid_move(_board, i, (row, col)):
+            _board[row][col] = i
+
+            # recursive step:
+            # if board is solved (full), return true and exit recursion
+            if solve_board(_board):
+                return True
+            
+            # set back to 0 and backtrack to loop iteration if the board can't be completed with that value
+            _board[row][col] = 0
+    # if no value works, backtrack to previous filled space
+    return False
+    
 
 # is_valid method
 def is_valid_move(_board, value, pos):
@@ -62,4 +84,6 @@ def display_board(_board):
 
 
 display_board(board)
-print(is_valid_move(board, 8, (0, 0)))
+print('---------------------------------------------')
+solve_board(board)
+display_board(board)
