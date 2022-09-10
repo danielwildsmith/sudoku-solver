@@ -16,6 +16,27 @@ board = [
 
 
 # is_valid method
+def is_valid_move(_board, value, pos):
+    # is the same value in that row?
+    for i in range(len(_board[0])):
+        if value == _board[pos[0]][i] and pos[1] != i:
+            return False
+   
+    # that column?
+    for i in range(len(_board)):
+        if value == _board[i][pos[1]] and pos[0] != i:
+            return False
+    
+    # that 3x3 grid?
+    # first, what grid is it in?
+    grid_location = [int(pos[0] / 3), int(pos[1] / 3)]
+    grid_topleft = [grid_location[0] * 3, grid_location[1] * 3]
+    for i in range(grid_topleft[0], grid_topleft[0] + 3):
+        for j in range(grid_topleft[1], grid_topleft[1] + 3):
+            if _board[i][j] == value and i != pos[0] and j != pos[1]:
+                return False
+    
+    return True
 
 
 # find_empty_space method
@@ -29,9 +50,9 @@ def find_empty_space(_board):
 def display_board(_board):
     for i in range(len(_board)):
         if i % 3 == 0 and i != 0:
-            print('- - - - - - - - - - - - ')
+            print('- - - - - - - - - - - ')
         for j in range(len(_board[0])):
-            if j % 3 == 0:
+            if j % 3 == 0 and j != 0:
                 print('| ', end='')
             
             if j == 8:
@@ -41,3 +62,4 @@ def display_board(_board):
 
 
 display_board(board)
+print(is_valid_move(board, 8, (0, 0)))
