@@ -146,7 +146,7 @@ class Game:
     # solves board of tiles, not int 2D array
     def solve_gui(self):
         test_space = find_empty_space(self.tiles)
-        # base case: board is full (cannot find empty space)
+        # base case: board is full (cannot find empty space), exit recursion
         if not test_space:
             return True
         else:
@@ -161,16 +161,19 @@ class Game:
                 pygame.time.delay(75)
             
                 # recursive step:
-                # if board is solved (full), return true and exit recursion
+                # if using this test value finds a solution to the entire board, it is correct and return true
+                # once no solution can be found with a test value, it returns to the for-loop and uses different value
                 if self.solve_gui():
                     return True
             
-                # set back to 0 and backtrack to loop iteration if the board can't be completed with that value
+                # set to 0 if a previous tile was incorrect until it reaches here again, then try looping through values
+                # again with different parent tiles
                 self.tiles[row][col].value = 0
                 self.tiles[row][col].visualize_algorithm(self.screen, False)
                 pygame.display.update()
                 pygame.time.delay(75)
-        # if no value works, backtrack to previous filled space
+        # if no solution to the board is possible with these 1-9 values, set value back to 0 and backtrack to
+        # previous tile, changing its value assigned by the loop
         return False
     
     def check_game_over(self):
@@ -195,7 +198,6 @@ class Game:
                         self.solve_gui()
             
             self.screen.fill(BACKGROUND_COLOR)
-
             self.draw_board()
             self.draw_grid()
             

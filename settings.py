@@ -34,7 +34,3 @@ TILE_SIZE = GRID_SIZE / BOARD_SIZE
 
 BACKGROUND_COLOR = '#edf6f7'
 SELECTED_COLOR = '#7ba7c9'
-
-# # helper functions
-# def convert_row_col_to_pos(row, col):
-#     return (GRID_TOPLEFT[0] + TILE_SIZE * row) + TILE_SIZE / 2, (GRID_TOPLEFT[1] + TILE_SIZE * col) + TILE_SIZE / 2

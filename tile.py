@@ -1,5 +1,3 @@
-import pygame.rect
-
 from settings import *
 from solve import is_valid_move
 

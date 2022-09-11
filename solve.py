@@ -1,16 +1,4 @@
-# board = [
-#     [0, 0, 9, 1, 3, 0, 6, 0, 0],
-#     [0, 0, 2, 5, 9, 0, 0, 0, 0],
-#     [0, 5, 8, 0, 6, 0, 2, 0, 0],
-#     [1, 0, 0, 0, 0, 7, 0, 0, 6],
-#     [0, 0, 0, 0, 0, 0, 0, 2, 0],
-#     [0, 2, 0, 0, 0, 3, 0, 7, 9],
-#     [4, 0, 0, 0, 0, 0, 9, 6, 0],
-#     [0, 7, 0, 0, 0, 0, 0, 0, 5],
-#     [9, 8, 1, 2, 0, 0, 0, 3, 7]
-# ]
-
-# solve 2D-array method (backtracking)
+# # solve 2D-array method (backtracking)
 # def solve_board(_board):
 #     test_space = find_empty_space(_board)
 #     # base case: board is full (cannot find empty space)
@@ -35,6 +23,7 @@
 #     return False
     
 
+# Helper functions altered to work for GUI Solve Method
 # is_valid method
 def is_valid_move(tile_board, value, pos):
     # is the same value in that row?
@@ -79,9 +68,3 @@ def display_board(_board):
                 print(_board[i][j].value)
             else:
                 print(str(_board[i][j].value) + ' ', end='')
-
-#
-# display_board(board)
-# print('---------------------------------------------')
-# solve_board(board)
-# display_board(board)
