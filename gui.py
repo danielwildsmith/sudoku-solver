@@ -1,6 +1,6 @@
 from settings import *
 from tile import Tile
-from solve import solve_board, is_valid_move
+from solve import *
 
 
 class Game:
@@ -18,7 +18,7 @@ class Game:
         self.can_move = True
         
         self.attempts = 3
-        solve_board(self.model_board)
+        # self.solve_board()
     
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
@@ -28,8 +28,8 @@ class Game:
         grid_gap = GRID_SIZE / 3
         # outer lines
         for i in range(0, 4):
-            pygame.draw.line(self.screen, 'black', (125 + grid_gap * i, 75), (125 + grid_gap * i, 525), 2)
-            pygame.draw.line(self.screen, 'black', (125, 75 + grid_gap * i), (575, 75 + grid_gap * i), 2)
+            pygame.draw.line(self.screen, '#293640', (125 + grid_gap * i, 75), (125 + grid_gap * i, 525), 2)
+            pygame.draw.line(self.screen, '#293640', (125, 75 + grid_gap * i), (575, 75 + grid_gap * i), 2)
         
         attempts_surf = self.font.render(f'Attempts:{self.attempts}', False, '#293640')
         attempts_rect = attempts_surf.get_rect(midleft=(30, HEIGHT - 30))
@@ -111,12 +111,54 @@ class Game:
                 else:
                     self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
                     self.attempts -= 1
+            
+            if keys[pygame.K_SPACE]:
+                self.solve_board()
     
     def selection_cooldown(self):
         if not self.can_move:
             current_time = pygame.time.get_ticks()
             if current_time - self.selection_time >= 100:
                 self.can_move = True
+
+    def extract_values(self):
+        values = [
+            [], [], [], [], [], [], [], [], []
+        ]
+        for i in range(0, len(self.tiles)):
+            for j in range(0, len(self.tiles[0])):
+                values[i].append(self.tiles[i][j].value)
+        return values
+
+    # solves board of tiles, not int 2D array
+    def solve_board(self):
+        test_space = find_empty_space(self.tiles)
+        # base case: board is full (cannot find empty space)
+        if not test_space:
+            return True
+        else:
+            row = test_space[0]
+            col = test_space[1]
+    
+        for i in range(1, 10):
+            if is_valid_move(self.tiles, i, (row, col)):
+                self.tiles[row][col].value = i
+                self.tiles[row][col].visualize_algorithm(self.screen, True)
+                pygame.display.update()
+                pygame.time.delay(100)
+            
+                # recursive step:
+                # if board is solved (full), return true and exit recursion
+                if self.solve_board():
+                    return True
+            
+                # set back to 0 and backtrack to loop iteration if the board can't be completed with that value
+                self.tiles[row][col].value = 0
+                self.tiles[row][col].visualize_algorithm(self.screen, False)
+                pygame.display.update()
+                pygame.time.delay(100)
+        # if no value works, backtrack to previous filled space
+        return False
     
     def run(self):
         while True:
@@ -126,12 +168,12 @@ class Game:
                     sys.exit()
             
             self.screen.fill(BACKGROUND_COLOR)
+
+            self.draw_board()
+            self.draw_grid()
             
             self.input()
             self.selection_cooldown()
-            
-            self.draw_board()
-            self.draw_grid()
             
             pygame.display.update()
             self.clock.tick(60)
