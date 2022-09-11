@@ -2,6 +2,10 @@ from settings import *
 from tile import Tile
 
 
+def convert_row_col_to_pos(row, col):
+    return (GRID_TOPLEFT[0] + TILE_SIZE * row) + TILE_SIZE / 2, (GRID_TOPLEFT[1] + TILE_SIZE * col) + TILE_SIZE / 2
+
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -9,7 +13,8 @@ class Game:
         pygame.display.set_caption('Sudoku')
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(GAME_FONT, 30)
-        self.tiles = []
+        self.tiles = self.init_tiles()
+        self.tile_selected = [0, 0]
     
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
@@ -21,20 +26,37 @@ class Game:
         for i in range(0, 4):
             pygame.draw.line(self.screen, 'black', (125 + grid_gap * i, 75), (125 + grid_gap * i, 525), 2)
             pygame.draw.line(self.screen, 'black', (125, 75 + grid_gap * i), (575, 75 + grid_gap * i), 2)
-    
-    def draw_board(self):
+            
+    def init_tiles(self):
         # 9x9: creating tile objects
+        tiles = []
         for i in range(0, BOARD_SIZE):
             for j in range(0, BOARD_SIZE):
                 tile = Tile(BOARD[i][j],
                             ((GRID_TOPLEFT[0] + TILE_SIZE * j) + TILE_SIZE / 2,
                              (GRID_TOPLEFT[1] + TILE_SIZE * i) + TILE_SIZE / 2),
                             self.font)
-                self.tiles.append(tile)
-        
-        # draw tiles
+                tiles.append(tile)
+        return tiles
+    
+    def draw_board(self):
         for tile in self.tiles:
-            tile.draw(self.screen)
+            if tile.pos == convert_row_col_to_pos(self.tile_selected[0], self.tile_selected[1]):
+                tile.draw(self.screen, background_color=SELECTED_COLOR)
+            else:
+                tile.draw(self.screen)
+
+    def input(self):
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_RIGHT] and self.tile_selected[0] < BOARD_SIZE - 1:
+            self.tile_selected[0] += 1
+        if keys[pygame.K_LEFT] and self.tile_selected[0] > 0:
+            self.tile_selected[0] -= 1
+        if keys[pygame.K_DOWN] and self.tile_selected[1] < BOARD_SIZE - 1:
+            self.tile_selected[1] += 1
+        if keys[pygame.K_UP] and self.tile_selected[1] > 0:
+            self.tile_selected[1] -= 1
     
     def run(self):
         while True:
@@ -45,6 +67,7 @@ class Game:
             
             self.screen.fill(BACKGROUND_COLOR)
             
+            self.input()
             self.draw_board()
             self.draw_grid()
             
