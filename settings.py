@@ -1,6 +1,5 @@
 import pygame
 import sys
-from solve import solve_board
 
 WIDTH = 700
 HEIGHT = 600
@@ -19,7 +18,6 @@ BOARD = [
     [0, 7, 0, 0, 0, 0, 0, 0, 5],
     [9, 8, 1, 2, 0, 0, 0, 3, 7]
 ]
-SOLUTION_BOARD = solve_board(BOARD)
 BOARD_SIZE = len(BOARD)
 TILE_SIZE = GRID_SIZE / BOARD_SIZE
 

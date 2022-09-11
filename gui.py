@@ -1,5 +1,6 @@
 from settings import *
 from tile import Tile
+from solve import solve_board, is_valid_move
 
 
 class Game:
@@ -9,11 +10,15 @@ class Game:
         pygame.display.set_caption('Sudoku')
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(GAME_FONT, 30)
+        self.model_board = None
         self.tiles = self.init_tiles()
         self.loc = [0, 0]
         
         self.selection_time = None
         self.can_move = True
+        
+        self.attempts = 3
+        solve_board(self.model_board)
     
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
@@ -25,10 +30,17 @@ class Game:
         for i in range(0, 4):
             pygame.draw.line(self.screen, 'black', (125 + grid_gap * i, 75), (125 + grid_gap * i, 525), 2)
             pygame.draw.line(self.screen, 'black', (125, 75 + grid_gap * i), (575, 75 + grid_gap * i), 2)
+        
+        attempts_surf = self.font.render(f'Attempts:{self.attempts}', False, '#293640')
+        attempts_rect = attempts_surf.get_rect(midleft=(30, HEIGHT - 30))
+        self.screen.blit(attempts_surf, attempts_rect)
     
     def init_tiles(self):
         # 9x9: creating tile objects
         tiles = [
+            [], [], [], [], [], [], [], [], []
+        ]
+        self.model_board = [
             [], [], [], [], [], [], [], [], []
         ]
         for i in range(0, BOARD_SIZE):
@@ -38,6 +50,7 @@ class Game:
                              (GRID_TOPLEFT[1] + TILE_SIZE * i) + TILE_SIZE / 2),
                             self.font, BOARD[i][j] != 0, i, j)
                 tiles[i].append(tile)
+                self.model_board[i].append(BOARD[i][j])
         return tiles
     
     def draw_board(self):
@@ -92,13 +105,12 @@ class Game:
                 self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
             if keys[pygame.K_RETURN] and self.tiles[self.loc[0]][self.loc[1]].temp_value != 0 and \
                 self.tiles[self.loc[0]][self.loc[1]].value == 0:
-                if self.tiles[self.loc[0]][self.loc[1]].temp_value == SOLUTION_BOARD[self.loc[0]][self.loc[1]]:
-                    self.tiles[self.loc[0]][self.loc[1]].value = \
-                        self.tiles[self.loc[0]][self.loc[1]].temp_value
+                if self.tiles[self.loc[0]][self.loc[1]].temp_value == self.model_board[self.loc[0]][self.loc[1]]:
+                    self.tiles[self.loc[0]][self.loc[1]].value = self.tiles[self.loc[0]][self.loc[1]].temp_value
                     self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
                 else:
                     self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
-                    
+                    self.attempts -= 1
     
     def selection_cooldown(self):
         if not self.can_move:
