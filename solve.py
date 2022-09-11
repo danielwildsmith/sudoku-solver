@@ -80,8 +80,8 @@ def display_board(_board):
             else:
                 print(str(_board[i][j]) + ' ', end='')
 
-
-display_board(board)
-print('---------------------------------------------')
-solve_board(board)
-display_board(board)
+#
+# display_board(board)
+# print('---------------------------------------------')
+# solve_board(board)
+# display_board(board)
