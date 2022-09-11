@@ -18,7 +18,10 @@ class Game:
         self.can_move = True
         
         self.attempts = 3
-    
+        self.time_counter = pygame.USEREVENT + 1
+        self.time_seconds = 0
+        pygame.time.set_timer(self.time_counter, 1000)
+
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
         title_rect = title_surf.get_rect(midbottom=(WIDTH / 2, 55))
@@ -31,8 +34,22 @@ class Game:
             pygame.draw.line(self.screen, '#293640', (125, 75 + grid_gap * i), (575, 75 + grid_gap * i), 2)
         
         attempts_surf = self.font.render(f'Attempts:{self.attempts}', False, '#293640')
-        attempts_rect = attempts_surf.get_rect(midleft=(30, HEIGHT - 30))
+        attempts_rect = attempts_surf.get_rect(midleft=(10, HEIGHT - 20))
         self.screen.blit(attempts_surf, attempts_rect)
+        
+        instruction_fnt = pygame.font.Font(GAME_FONT, 18)
+        instruction_surf = instruction_fnt.render(f'Press [SPACE] to auto-solve!', False, '#293640')
+        instruction_rect = instruction_surf.get_rect(midtop=(WIDTH/2, 530))
+        self.screen.blit(instruction_surf, instruction_rect)
+        
+        if self.time_seconds % 60 < 10 and self.time_seconds < 60:
+            time_surf = self.font.render(f'{self.time_seconds // 60}:0{self.time_seconds}', False, '#293640')
+        elif self.time_seconds % 60 < 10 and self.time_seconds >= 60:
+            time_surf = self.font.render(f'{self.time_seconds // 60}:0{self.time_seconds % 60}', False, '#293640')
+        else:
+            time_surf = self.font.render(f'{self.time_seconds // 60}:{self.time_seconds % 60}', False, '#293640')
+        time_rect = time_surf.get_rect(midright=(WIDTH - 10, HEIGHT - 20))
+        self.screen.blit(time_surf, time_rect)
     
     def init_tiles(self):
         # 9x9: creating tile objects
@@ -111,9 +128,6 @@ class Game:
                     self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
                     self.attempts -= 1
             
-            if keys[pygame.K_SPACE]:
-                self.solve_board()
-    
     def selection_cooldown(self):
         if not self.can_move:
             current_time = pygame.time.get_ticks()
@@ -130,7 +144,7 @@ class Game:
         return values
 
     # solves board of tiles, not int 2D array
-    def solve_board(self):
+    def solve_gui(self):
         test_space = find_empty_space(self.tiles)
         # base case: board is full (cannot find empty space)
         if not test_space:
@@ -148,7 +162,7 @@ class Game:
             
                 # recursive step:
                 # if board is solved (full), return true and exit recursion
-                if self.solve_board():
+                if self.solve_gui():
                     return True
             
                 # set back to 0 and backtrack to loop iteration if the board can't be completed with that value
@@ -159,12 +173,26 @@ class Game:
         # if no value works, backtrack to previous filled space
         return False
     
+    def check_game_over(self):
+        if self.attempts <= 0:
+            print('Game Over')
+            self.screen.fill(BACKGROUND_COLOR)
+            self.draw_board()
+            self.draw_grid()
+            
+            self.solve_gui()
+    
     def run(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == self.time_counter:
+                    self.time_seconds += 1
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.solve_gui()
             
             self.screen.fill(BACKGROUND_COLOR)
 
@@ -173,6 +201,7 @@ class Game:
             
             self.input()
             self.selection_cooldown()
+            self.check_game_over()
             
             pygame.display.update()
             self.clock.tick(60)
