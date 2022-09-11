@@ -5,7 +5,7 @@ WIDTH = 700
 HEIGHT = 600
 GRID_SIZE = 450
 GRID_TOPLEFT = [125, 75]
-GAME_FONT = 'joystix.ttf'
+GAME_FONT = './font/joystix.ttf'
 
 BOARD = [
     [0, 0, 9, 1, 3, 0, 6, 0, 0],

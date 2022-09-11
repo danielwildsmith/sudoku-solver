@@ -1,5 +1,5 @@
-from settings import *
-from solve import is_valid_move
+from src.settings import *
+from src.solve import is_valid_move
 
 
 class Tile:
