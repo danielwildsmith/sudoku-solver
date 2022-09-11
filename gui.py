@@ -18,7 +18,6 @@ class Game:
         self.can_move = True
         
         self.attempts = 3
-        # self.solve_board()
     
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
@@ -105,7 +104,7 @@ class Game:
                 self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
             if keys[pygame.K_RETURN] and self.tiles[self.loc[0]][self.loc[1]].temp_value != 0 and \
                 self.tiles[self.loc[0]][self.loc[1]].value == 0:
-                if self.tiles[self.loc[0]][self.loc[1]].temp_value == self.model_board[self.loc[0]][self.loc[1]]:
+                if self.tiles[self.loc[0]][self.loc[1]].temp_value == SOLVED_BOARD[self.loc[0]][self.loc[1]]:
                     self.tiles[self.loc[0]][self.loc[1]].value = self.tiles[self.loc[0]][self.loc[1]].temp_value
                     self.tiles[self.loc[0]][self.loc[1]].temp_value = 0
                 else:
@@ -145,7 +144,7 @@ class Game:
                 self.tiles[row][col].value = i
                 self.tiles[row][col].visualize_algorithm(self.screen, True)
                 pygame.display.update()
-                pygame.time.delay(100)
+                pygame.time.delay(75)
             
                 # recursive step:
                 # if board is solved (full), return true and exit recursion
@@ -156,7 +155,7 @@ class Game:
                 self.tiles[row][col].value = 0
                 self.tiles[row][col].visualize_algorithm(self.screen, False)
                 pygame.display.update()
-                pygame.time.delay(100)
+                pygame.time.delay(75)
         # if no value works, backtrack to previous filled space
         return False
     
