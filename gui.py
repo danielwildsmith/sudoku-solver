@@ -2,10 +2,6 @@ from settings import *
 from tile import Tile
 
 
-def convert_row_col_to_pos(row, col):
-    return (GRID_TOPLEFT[0] + TILE_SIZE * row) + TILE_SIZE / 2, (GRID_TOPLEFT[1] + TILE_SIZE * col) + TILE_SIZE / 2
-
-
 class Game:
     def __init__(self):
         pygame.init()
@@ -15,6 +11,9 @@ class Game:
         self.font = pygame.font.Font(GAME_FONT, 30)
         self.tiles = self.init_tiles()
         self.tile_selected = [0, 0]
+
+        self.selection_time = None
+        self.can_move = True
     
     def draw_grid(self):
         title_surf = self.font.render('Sudoku', False, '#293640')
@@ -49,14 +48,29 @@ class Game:
     def input(self):
         keys = pygame.key.get_pressed()
         
-        if keys[pygame.K_RIGHT] and self.tile_selected[0] < BOARD_SIZE - 1:
-            self.tile_selected[0] += 1
-        if keys[pygame.K_LEFT] and self.tile_selected[0] > 0:
-            self.tile_selected[0] -= 1
-        if keys[pygame.K_DOWN] and self.tile_selected[1] < BOARD_SIZE - 1:
-            self.tile_selected[1] += 1
-        if keys[pygame.K_UP] and self.tile_selected[1] > 0:
-            self.tile_selected[1] -= 1
+        if self.can_move:
+            if keys[pygame.K_RIGHT] and self.tile_selected[0] < BOARD_SIZE - 1:
+                self.tile_selected[0] += 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            if keys[pygame.K_LEFT] and self.tile_selected[0] > 0:
+                self.tile_selected[0] -= 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            if keys[pygame.K_DOWN] and self.tile_selected[1] < BOARD_SIZE - 1:
+                self.tile_selected[1] += 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+            if keys[pygame.K_UP] and self.tile_selected[1] > 0:
+                self.tile_selected[1] -= 1
+                self.can_move = False
+                self.selection_time = pygame.time.get_ticks()
+    
+    def selection_cooldown(self):
+        if not self.can_move:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.selection_time >= 100:
+                self.can_move = True
     
     def run(self):
         while True:
@@ -68,6 +82,8 @@ class Game:
             self.screen.fill(BACKGROUND_COLOR)
             
             self.input()
+            self.selection_cooldown()
+            
             self.draw_board()
             self.draw_grid()
             
